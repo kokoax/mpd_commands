@@ -4,7 +4,7 @@ defmodule MPDQuery do
     _ = :gen_tcp.recv(socket, 0)
 
     # RECVで使うバッファのサイズ指定 now(10^8)
-    :ok = :inet.setopts(socket, recbuf: 100000000)
+    # :ok = :inet.setopts(socket, recbuf: 100000000)
     socket
   end
 
@@ -72,7 +72,7 @@ defmodule MPDQuery do
     cmd_do(~s(listallinfo \n))
   end
 
-  defp cmd_do(cmd) do
+  def cmd_do(cmd) do
     sock = connected_to_mpd(6600)
 
 
@@ -82,19 +82,32 @@ defmodule MPDQuery do
 
     :ok = :gen_tcp.close(sock)
 
+    # IO.puts msg
+
     Enum.join(for <<c::utf8 <- msg>>, do: <<c::utf8>>)
       |> to_map
-      |> List.delete(%{"": nil})
-      |> List.delete(%{OK: nil})
-  end
+ end
 end
 
 # IO.inspect MPDQuery.current
 # IO.inspect MPDQuery.status
-# IO.inspect MPDQuery.list_all_info
+# MPDQuery.list_all |> Enum.map(&(&1 |> IO.inspect))
 # IO.inspect MPDQuery.stats
 # IO.inspect MPDQuery.list_all_file
 # IO.inspect MPDQuery.list_all_dir
-IO.inspect MPDQuery.ls("")
+# IO.inspect MPDQuery.ls("/home/kokoax/Music/ADAM at")
+IO.inspect MPDQuery.lsinfo("")
+# MPDQuery.cmd_do("playlistinfo\n") |> Enum.map(&(&1 |> IO.inspect))
+# MPDQuery.cmd_do("playlistid 185\n") |> Enum.map(&(&1 |> IO.inspect))
+# MPDQuery.cmd_do("playlistinfo 43\n") |> Enum.map(&(&1 |> IO.inspect))
+# MPDQuery.cmd_do("list\n") |> Enum.map(&(&1 |> IO.inspect))
+# MPDQuery.cmd_do(~s/playlistinfo 0\n/) |> Enum.map(&(&1 |> IO.inspect))
+# IO.inspect MPDQuery.cmd_do(~s/playlistinfo\n/)
+# IO.inspect MPDQuery.cmd_do(~s/status\n/)
+# MPDQuery.cmd_do(~s/list album\n/) |> Enum.map(&(&1 |> IO.inspect))
+# MPDQuery.cmd_do("find album net_presents\n") |> Enum.map(&(&1 |> IO.inspect))
 
+
+# TODO
+# any query implementation
 
